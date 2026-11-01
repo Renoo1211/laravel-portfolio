@@ -1,0 +1,118 @@
+/* ── Interaksi tambahan ── */
+
+/* Scroll progress */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  transform: scaleX(0); transform-origin: 0 50%;
+  z-index: 10000; pointer-events: none;
+}
+
+/* Typewriter */
+.hero-typed {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  color: var(--accent);
+  margin: 0.2rem 0 1rem;
+  min-height: 1.8em;
+}
+.typed-prompt { color: var(--text3); margin-right: 0.5rem; }
+.typed-caret {
+  display: inline-block; width: 2px; height: 1.1em; margin-left: 2px;
+  background: var(--accent); vertical-align: text-bottom;
+  animation: caret-blink 1s steps(1) infinite;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+/* Spotlight + tilt cards */
+.tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.25s ease, border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+.tilt::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), var(--accent-glow), transparent 65%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.tilt:hover::after { opacity: 1; }
+
+/* Project filter */
+.project-filters { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0 0 1.6rem; }
+.filter-chip {
+  font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.03em;
+  padding: 0.4rem 1rem; border-radius: 999px; cursor: pointer;
+  background: transparent; color: var(--text2); border: 1.5px solid var(--border2);
+  transition: all 0.2s;
+}
+.filter-chip:hover { color: var(--text); border-color: var(--accent); }
+.filter-chip.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.project-card.is-hidden { display: none; }
+.project-card.pop-in { animation: pop-in 0.4s ease both; }
+@keyframes pop-in { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+/* Lightbox sertifikat */
+.cert-img-wrap[data-lightbox] { cursor: zoom-in; }
+.lightbox {
+  position: fixed; inset: 0; z-index: 10001;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+  background: rgba(4, 8, 16, 0.88); backdrop-filter: blur(6px);
+  padding: 2rem; opacity: 0; transition: opacity 0.25s;
+}
+.lightbox[hidden] { display: none; }
+.lightbox.open { opacity: 1; }
+.lightbox img {
+  max-width: min(92vw, 1100px); max-height: 80vh; border-radius: var(--radius);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6); transform: scale(0.94); transition: transform 0.25s;
+}
+.lightbox.open img { transform: scale(1); }
+.lightbox-caption { color: #ededed; font-size: 0.95rem; text-align: center; }
+.lightbox-close {
+  position: absolute; top: 1rem; right: 1.4rem; font-size: 2.4rem; line-height: 1;
+  background: none; border: 0; color: #fff; cursor: pointer;
+}
+
+/* Back to top */
+.to-top {
+  position: fixed; right: 1.4rem; bottom: 1.4rem; z-index: 900;
+  width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--border2);
+  background: var(--surface); color: var(--accent); cursor: pointer;
+  opacity: 0; transform: translateY(14px); pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s, background 0.2s, color 0.2s;
+}
+.to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+.to-top:hover { background: var(--accent); color: var(--on-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .typed-caret, .project-card.pop-in { animation: none; }
+  .tilt { transition: none; }
+}
+
+/* ID card 3D */
+.hero-right { position: relative; }
+/* Canvas lebih lebar dari kolom kartu agar ayunan tidak terpotong; selalu tembus klik
+   (interaksi ditangani lewat window di idcard.js). Ukurannya tetap sejak awal supaya
+   renderer punya dimensi saat dibuat. */
+.id-3d {
+  position: absolute; top: 50%; left: 50%;
+  width: 620px; height: 700px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+/* Setelah 3D siap: sembunyikan kartu HTML, kolom tetap selebar kartu lama */
+.hero-right.has-3d { width: 290px; height: 620px; }
+.hero-right.has-3d .id-card { display: none; }
+@media (max-width: 768px) {
+  .id-3d { width: 100%; height: 520px; }
+  .hero-right.has-3d { width: 100%; height: 520px; }
+}
+
+/* Ikon monokrom (pengganti emoji berwarna) */
+.project-icon i, .contact-info span i { color: var(--text); font-size: 1.05em; }
+.contact-info span i { font-size: 1.25rem; }
+
+/* Marquee skill: durasi dihitung JS (kecepatan tetap), loop tanpa celah */
+.marquee-track { will-change: transform; }
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none !important; }
+}
