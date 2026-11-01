@@ -89,7 +89,7 @@ return [
         'email_label' => 'Email Address',
         'message' => 'Message',
         'message_ph' => 'Tell me about your project or idea...',
-        'send' => '✈ Send Message',
+        'send' => 'Send Message',
         'sent' => '✅ Message sent successfully. Thank you for reaching out!',
         'err_send' => 'Failed to send the message. Please try again later.',
         'err_conn' => 'Connection error. Please try again later.',

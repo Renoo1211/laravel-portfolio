@@ -89,7 +89,7 @@ return [
         'email_label' => 'Alamat Email',
         'message' => 'Pesan',
         'message_ph' => 'Ceritakan tentang proyek atau ide Anda...',
-        'send' => '✈ Kirim Pesan',
+        'send' => 'Kirim Pesan',
         'sent' => '✅ Pesan berhasil dikirim. Terima kasih sudah menghubungi saya!',
         'err_send' => 'Gagal mengirim pesan. Coba lagi nanti.',
         'err_conn' => 'Terjadi kesalahan koneksi. Coba lagi nanti.',
