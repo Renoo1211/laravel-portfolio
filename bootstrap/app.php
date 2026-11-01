@@ -12,7 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Di balik proxy Vercel: percayai X-Forwarded-Proto agar asset()/url() menghasilkan https://
+        // (kalau tidak, CSS/JS dimuat lewat http:// dan diblokir browser sebagai mixed content).
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
