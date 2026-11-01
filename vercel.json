@@ -5,13 +5,13 @@
   "buildCommand": "npm run build",
   "outputDirectory": "public",
   "functions": {
-    "api/index.php": {
-      "runtime": "vercel-php@0.9.0",
-      "excludeFiles": "{node_modules/**,tests/**,resources/js/**,storage/logs/**}"
+    "api/*.php": {
+      "runtime": "vercel-php@0.9.0"
     }
   },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index.php" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/api/index.php" }
   ],
   "env": {
     "APP_ENV": "production",
