@@ -27,9 +27,11 @@ function webglAvailable() {
 
 if (host && heroRight && webglAvailable()) {
     init(JSON.parse(host.dataset.card)).then(
-        () => heroRight.classList.add('has-3d'), // sembunyikan kartu HTML & nonaktifkan drag lama
-        (err) => console.warn('ID card 3D gagal dimuat, memakai kartu HTML.', err),
+        () => { heroRight.classList.add('has-3d'); heroRight.classList.remove('pending-3d'); }, // sembunyikan kartu HTML & nonaktifkan drag lama
+        (err) => { console.warn('ID card 3D gagal dimuat, memakai kartu HTML.', err); heroRight.classList.remove('pending-3d'); },
     );
+} else {
+    heroRight?.classList.remove('pending-3d');
 }
 
 /* ───────────── Tekstur (Canvas 2D) ───────────── */
@@ -270,11 +272,15 @@ async function init(cfg) {
     const mkBody = (desc, x, y) => world.createRigidBody(desc.setTranslation(x, y, 0));
     const dyn = () => RAPIER.RigidBodyDesc.dynamic().setLinearDamping(4).setAngularDamping(4).setCanSleep(true);
 
-    const fixed = mkBody(RAPIER.RigidBodyDesc.fixed(), 0, 4);
-    const j1 = mkBody(dyn(), 0.5, 4);
-    const j2 = mkBody(dyn(), 1, 4);
-    const j3 = mkBody(dyn(), 1.5, 4);
-    const card = mkBody(dyn(), 2, 4);
+    // Intro: seluruh rantai mulai di atas area terlihat, lalu titik gantung (kinematik) turun ke y=4
+    // sehingga kartu "meluncur masuk dari atas" dan berayun alami mengikuti fisika.
+    const DROP = 7, DROP_MS = 1400;
+    const fixed = mkBody(RAPIER.RigidBodyDesc.kinematicPositionBased(), 0, 4 + DROP);
+    const j1 = mkBody(dyn(), 0.5, 4 + DROP);
+    const j2 = mkBody(dyn(), 1, 4 + DROP);
+    const j3 = mkBody(dyn(), 1.5, 4 + DROP);
+    const card = mkBody(dyn(), 2, 4 + DROP);
+    let dropStart = 0;
     [j1, j2, j3].forEach((b) => world.createCollider(RAPIER.ColliderDesc.ball(0.1).setDensity(20), b));
     world.createCollider(RAPIER.ColliderDesc.cuboid(0.8, 1.125, 0.01), card);
 
@@ -379,6 +385,17 @@ async function init(cfg) {
     const tmp = new Vector3();
 
     function tick(delta) {
+        let dropping = false;
+        if (!dropStart) dropStart = performance.now();
+        const dp = (performance.now() - dropStart) / DROP_MS;
+        if (dp < 1) {
+            dropping = true;
+            const e = 1 - Math.pow(1 - dp, 3); // easeOutCubic
+            fixed.setNextKinematicTranslation({ x: 0, y: 4 + DROP * (1 - e), z: 0 });
+            [card, j1, j2, j3].forEach((b) => b.wakeUp());
+        } else if (dp < 1.05) {
+            fixed.setNextKinematicTranslation({ x: 0, y: 4, z: 0 });
+        }
         if (dragged) {
             vec.set(pointer.x, pointer.y, 0.5).unproject(camera);
             dir.copy(vec).sub(camera.position).normalize();
@@ -401,7 +418,7 @@ async function init(cfg) {
         // Saat sudah (hampir) diam, tidurkan rantai agar solver tidak menggetarkan tali/kartu terus-menerus
         const lv = card.linvel(), av2 = card.angvel();
         const speed = Math.hypot(lv.x, lv.y, lv.z) + Math.hypot(av2.x, av2.y, av2.z);
-        if (!dragged && speed < 0.05) {
+        if (!dragged && !dropping && speed < 0.05) {
             if (++calmFrames > 45) [card, j1, j2, j3].forEach((b) => b.sleep());
         } else calmFrames = 0;
 

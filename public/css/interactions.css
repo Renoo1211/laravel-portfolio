@@ -102,6 +102,8 @@
 /* Setelah 3D siap: sembunyikan kartu HTML, kolom tetap selebar kartu lama */
 .hero-right.has-3d { width: 290px; height: 620px; }
 .hero-right.has-3d .id-card { display: none; }
+/* Selama 3D dimuat: kartu HTML disembunyikan (ruang tetap dipertahankan, tanpa layout shift) */
+.hero-right.pending-3d .id-card { visibility: hidden; animation: none; }
 @media (max-width: 768px) {
   .id-3d { width: 100%; height: 520px; }
   .hero-right.has-3d { width: 100%; height: 520px; }

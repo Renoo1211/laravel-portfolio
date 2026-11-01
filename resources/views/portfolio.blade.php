@@ -115,7 +115,7 @@
       </div>
 
       {{-- ID Card Profile --}}
-      <div class="hero-right fade-up delay-2">
+      <div class="hero-right pending-3d fade-up delay-2">
         @php
           $card3d = [
               'org' => __('portfolio.card.org'), 'status' => __('portfolio.card.status'),
@@ -127,6 +127,16 @@
         @endphp
         {{-- ID card 3D (Three.js). Kartu HTML di bawah jadi fallback bila WebGL tidak ada. --}}
         <div id="idcard3d" class="id-3d" data-card="{{ json_encode($card3d) }}"></div>
+        {{-- Kartu HTML disembunyikan selama 3D dimuat (.pending-3d). Tanpa WebGL, atau bila 3D tak kunjung siap (15 dtk), tampilkan kartu HTML. --}}
+        <script>
+          (function (box) {
+            var gl = false;
+            try { var c = document.createElement('canvas'); gl = !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'))); } catch (e) {}
+            var show = function () { box.classList.remove('pending-3d'); };
+            if (!gl) return show();
+            setTimeout(function () { if (!box.classList.contains('has-3d')) show(); }, 15000);
+          })(document.currentScript.parentElement);
+        </script>
         <div class="id-card">
           <div class="id-card-lanyard">
             <div class="lanyard-strap"></div>
